@@ -1,30 +1,29 @@
-mod utils; 
+mod utils;
 mod api;
 mod models;
+mod kafka;
+mod services;  
+
+use tokio::time::{sleep, Duration};
+use rdkafka::producer::FutureProducer;
+use models::crypto_symbols::CryptoSymbols;
+use services::service::fetch_and_send;
 
 #[tokio::main]
 async fn main() {
-    let binance_symbol = "BTCUSDT";
-    let kucoin_symbol = "BTC-USDT";
-    let upbit_symbol = "USDT-BTC";
+    let producer: FutureProducer = kafka::producer::create_producer();
 
-    match api::binance::get_binance_ohlcv(binance_symbol).await {
-        Ok(market_data) => println!("Binance: {:?}", market_data),
-        Err(e) => eprintln!("Failed to fetch Binance data: {}", e),
-    }
+    let btc_symbols = CryptoSymbols::new("BTCUSDT", "BTC-USDT", "USDT-BTC", "KRW-BTC");
+    let eth_symbols = CryptoSymbols::new("ETHUSDT", "ETH-USDT", "USDT-ETH", "KRW-ETH");
 
-    match api::kucoin::get_kucoin_ohlcv(kucoin_symbol).await {
-        Ok(market_data) => println!("KuCoin: {:?}", market_data),
-        Err(e) => eprintln!("Failed to fetch KuCoin data: {}", e),
-    }
+    loop {
+        // BTC 데이터 가져오기 및 전송
+        fetch_and_send(&producer, &btc_symbols, "BTC").await;
 
-    match api::upbit::get_upbit_ohlcv(upbit_symbol).await {
-        Ok(market_data) => println!("Upbit: {:?}", market_data),
-        Err(e) => eprintln!("Failed to fetch Upbit data: {}", e),
-    }
+        // ETH 데이터 가져오기 및 전송
+        fetch_and_send(&producer, &eth_symbols, "ETH").await;
 
-    match api::bithumb::get_bithumb_ohlcv().await {
-        Ok(market_data) => println!("Bithumb: {:?}", market_data),
-        Err(e) => eprintln!("Failed to fetch Bithumb data: {}", e),
+        // 5초 동안 대기
+        sleep(Duration::from_secs(5)).await;
     }
 }
