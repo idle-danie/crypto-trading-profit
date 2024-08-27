@@ -1,2 +1,11 @@
+# Project environment variables
+.env
+
+# Rust project files 
 target/
 Cargo.lock
+
+# Python project files
+__pycache__/
+*.pyc
+venv/

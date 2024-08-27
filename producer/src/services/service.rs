@@ -1,5 +1,4 @@
 use crate::api::{binance, kucoin, upbit, bithumb};
-use crate::utils;
 use rdkafka::producer::FutureProducer;
 use serde_json;
 use crate::models::crypto_symbols::CryptoSymbols;
@@ -18,7 +17,7 @@ pub async fn fetch_and_send(
             kafka::producer::send_to_kafka(
                 producer,
                 "binance-topic",
-                utils::normalize_symbol(symbols.binance),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;
@@ -34,7 +33,7 @@ pub async fn fetch_and_send(
             kafka::producer::send_to_kafka(
                 producer,
                 "kucoin-topic",
-                utils::normalize_symbol(symbols.kucoin),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;
@@ -50,7 +49,7 @@ pub async fn fetch_and_send(
             kafka::producer::send_to_kafka(
                 producer,
                 "upbit-topic",
-                utils::normalize_symbol(symbols.upbit),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;
@@ -66,7 +65,7 @@ pub async fn fetch_and_send(
             kafka::producer::send_to_kafka(
                 producer,
                 "bithumb-topic",
-                utils::normalize_symbol(symbols.bithumb),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;

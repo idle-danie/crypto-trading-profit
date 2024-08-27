@@ -1,5 +1,5 @@
 [package]
-name = "crypto_trading_profit"
+name = "producer"
 version = "0.1.0"
 edition = "2021"
 
