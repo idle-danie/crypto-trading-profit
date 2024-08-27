@@ -1,11 +1,13 @@
 use reqwest::Error;
 use crate::models::market_data::MarketData;
-use crate::utils::parse_f64;  
+use crate::utils::{normalize_symbol, parse_f64};
+use std::env;
 
 pub async fn get_kucoin_ohlcv(symbol: &str) -> Result<MarketData, Error> {
-    let url = format!("https://api.kucoin.com/api/v1/market/stats?symbol={}", symbol);
+    let base_url = env::var("KUCOIN_API_URL").expect("KUCOIN_API_URL 환경 변수를 설정하세요.");
+    let url = format!("{}?symbol={}", base_url, symbol);
+    
     let client = reqwest::Client::new();
-
     let response = client
         .get(&url)
         .send()
@@ -18,6 +20,8 @@ pub async fn get_kucoin_ohlcv(symbol: &str) -> Result<MarketData, Error> {
     let opening_price = last_price - change_price;
 
     let market_data = MarketData {
+        symbol: normalize_symbol(symbol).to_string(),
+        exchange_name: "Kucoin".to_string(),
         opening_price,
         high_price: parse_f64(&kucoin_data["data"]["high"]),
         low_price: parse_f64(&kucoin_data["data"]["low"]),
