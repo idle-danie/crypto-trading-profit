@@ -20,27 +20,36 @@ def start_streaming(spark):
     )
     processed_stream = process_kafka_stream(parsed_stream)
 
-    query_crypto_prices = processed_stream.writeStream.foreachBatch(lambda df, _: df.show()).start()
+    # 중복 제거 후 MySQL에 적재
+    deduplicated_stream = processed_stream.dropDuplicates(["symbol", "timestamp", "exchange_name"])
 
-    # MySQL에 crypto_prices 테이블에 데이터 적재
-    query_crypto_prices_to_mysql = write_to_mysql(processed_stream, "crypto_prices")
+    query_crypto_prices_to_mysql = (
+        deduplicated_stream.writeStream.outputMode("append")
+        .foreachBatch(lambda df, epochId: write_to_mysql(df, "crypto_prices"))
+        .start()
+    )
 
-    # 매매 차익 계산 (워터마크 적용된 데이터로 처리)
-    arbitrage_avg_df = calculate_arbitrage_average(processed_stream)
-    arbitrage_values_df = calculate_arbitrage_values(processed_stream)
+    # 매매 차익 average와 values 산출 (워터마크 적용된 데이터로 처리)
+    arbitrage_avg_df = calculate_arbitrage_average(deduplicated_stream)
+    arbitrage_values_df = calculate_arbitrage_values(deduplicated_stream)
 
-    # 각 단계에서 데이터 출력
-    query_arbitrage_avg_show = arbitrage_avg_df.writeStream.foreachBatch(lambda df, _: df.show()).start()
-    query_arbitrage_values_show = arbitrage_values_df.writeStream.foreachBatch(lambda df, _: df.show()).start()
+    # 중복 제거 후 MySQL에 적재
+    query_arbitrage_avg = (
+        arbitrage_avg_df.writeStream.outputMode("append")
+        .foreachBatch(lambda df, epochId: write_to_mysql(df, "arbitrage_average"))
+        .start()
+    )
 
-    # MySQL에 데이터 적재
-    query_arbitrage_avg = write_to_mysql(arbitrage_avg_df, "arbitrage_average")
-    query_arbitrage_values = write_to_mysql(arbitrage_values_df, "arbitrage_values")
+    query_arbitrage_values = (
+        arbitrage_values_df.writeStream.outputMode("append")
+        .foreachBatch(
+            lambda df, epochId: write_to_mysql(
+                df.dropDuplicates(["symbol", "exchange_pair", "timestamp"]), "arbitrage_values"
+            )
+        )
+        .start()
+    )
 
-    # 각 스트리밍 쿼리의 종료를 기다림
-    query_crypto_prices.awaitTermination()
     query_crypto_prices_to_mysql.awaitTermination()
     query_arbitrage_avg.awaitTermination()
     query_arbitrage_values.awaitTermination()
-    query_arbitrage_avg_show.awaitTermination()
-    query_arbitrage_values_show.awaitTermination()
