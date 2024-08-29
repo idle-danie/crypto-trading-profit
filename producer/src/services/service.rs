@@ -1,5 +1,4 @@
 use crate::api::{binance, kucoin, upbit, bithumb};
-use crate::utils;
 use rdkafka::producer::FutureProducer;
 use serde_json;
 use crate::models::crypto_symbols::CryptoSymbols;
@@ -13,12 +12,11 @@ pub async fn fetch_and_send(
     // Binance
     match binance::get_binance_ohlcv(symbols.binance).await {
         Ok(market_data) => {
-            println!("{} Binance: {:?}", crypto_name, market_data);
             let payload = serde_json::to_string(&market_data).unwrap();
             kafka::producer::send_to_kafka(
                 producer,
                 "binance-topic",
-                utils::normalize_symbol(symbols.binance),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;
@@ -29,12 +27,11 @@ pub async fn fetch_and_send(
     // KuCoin
     match kucoin::get_kucoin_ohlcv(symbols.kucoin).await {
         Ok(market_data) => {
-            println!("{} KuCoin: {:?}", crypto_name, market_data);
             let payload = serde_json::to_string(&market_data).unwrap();
             kafka::producer::send_to_kafka(
                 producer,
                 "kucoin-topic",
-                utils::normalize_symbol(symbols.kucoin),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;
@@ -45,12 +42,11 @@ pub async fn fetch_and_send(
     // Upbit
     match upbit::get_upbit_ohlcv(symbols.upbit).await {
         Ok(market_data) => {
-            println!("{} Upbit: {:?}", crypto_name, market_data);
             let payload = serde_json::to_string(&market_data).unwrap();
             kafka::producer::send_to_kafka(
                 producer,
                 "upbit-topic",
-                utils::normalize_symbol(symbols.upbit),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;
@@ -61,12 +57,11 @@ pub async fn fetch_and_send(
     // Bithumb
     match bithumb::get_bithumb_ohlcv(symbols.bithumb).await {
         Ok(market_data) => {
-            println!("{} Bithumb: {:?}", crypto_name, market_data);
             let payload = serde_json::to_string(&market_data).unwrap();
             kafka::producer::send_to_kafka(
                 producer,
                 "bithumb-topic",
-                utils::normalize_symbol(symbols.bithumb),
+                &market_data.symbol,  
                 payload.as_bytes(),
             )
             .await;

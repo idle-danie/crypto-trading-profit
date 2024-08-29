@@ -1,4 +1,4 @@
-// Symbol을 정규화하는 Helper 함수
+// symbol을 정규화하는 Helper 함수
 pub fn normalize_symbol(symbol: &str) -> &str {
     match symbol.to_uppercase().as_str() {
         "BTCUSDT" | "BTC-USDT" | "USDT-BTC" | "KRW-BTC" => "BTC",
