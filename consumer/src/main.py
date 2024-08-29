@@ -4,7 +4,7 @@ from streaming.streaming_job import start_streaming
 
 def create_spark_session():
     spark = SparkSession.builder.appName("Crypto Arbitrage Streaming").getOrCreate()
-    spark.sparkContext.setLogLevel("ERROR")  # 로그 레벨을 ERROR로 설정
+    spark.sparkContext.setLogLevel("ERROR")  # 로그 레벨: ERROR
     return spark
 
 

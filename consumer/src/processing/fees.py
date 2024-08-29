@@ -14,9 +14,9 @@ class Fees:
     # Upbit
     UPBIT_BTC_TRADE_FEE = 1 - 0.0005
     UPBIT_ETH_TRADE_FEE = 1 - 0.0005
-    UPBIT_WITHDRAW_FEE = 0  # Upbit은 입금 시 수수료가 없음
+    UPBIT_WITHDRAW_FEE = 0
 
     # Bithumb
     BITHUMB_BTC_TRADE_FEE = 1 - 0.0025
     BITHUMB_ETH_TRADE_FEE = 1 - 0.0025
-    BITHUMB_WITHDRAW_FEE = 0  # Bithumb은 입금 시 수수료가 없음
+    BITHUMB_WITHDRAW_FEE = 0
