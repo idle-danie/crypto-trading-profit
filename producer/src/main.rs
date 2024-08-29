@@ -2,8 +2,9 @@ mod utils;
 mod api;
 mod models;
 mod kafka;
-mod services;  
+mod services;
 
+use dotenv::dotenv;
 use tokio::time::{sleep, Duration};
 use rdkafka::producer::FutureProducer;
 use models::crypto_symbols::CryptoSymbols;
@@ -11,6 +12,8 @@ use services::service::fetch_and_send;
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
+
     let producer: FutureProducer = kafka::producer::create_producer();
 
     let btc_symbols = CryptoSymbols::new("BTCUSDT", "BTC-USDT", "USDT-BTC", "KRW-BTC");
