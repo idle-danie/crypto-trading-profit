@@ -18,3 +18,5 @@
 | Streaming | <img src="https://img.shields.io/badge/Kafka-231F20?style=flat&logo=Apachekafka&logoColor=white"/> <img src="https://img.shields.io/badge/Spark-E25A1C?style=flat&logo=apache spark&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=Mysql&logoColor=white"/> <img src="https://img.shields.io/badge/Grafana-F46800?style=flat&logo=Grafana&logoColor=white"/>      |
 
 ## 프로젝트 아키텍처
+![image](https://github.com/user-attachments/assets/9e70f1df-94ea-4c8a-b452-b95591e6845e)
+
