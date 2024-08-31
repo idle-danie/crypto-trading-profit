@@ -119,7 +119,7 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### **6. Python 실행 환경 세팅**
+### **6. Python 실행 환경 세팅 및 종속성 설치**
 ```bash
 export PYTHONPATH=$PYTHONPATH:/Users/xxx/crypto-trading-profit/consumer
 cd consumer
