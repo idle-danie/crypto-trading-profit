@@ -81,6 +81,56 @@ BTC 실시간 매매차익 분석 |ETH 실시간 매매차익 분석|
 |------|------|
 |![overall](https://github.com/user-attachments/assets/86aea59c-d679-4545-9e03-582ba48a0918)|![grafana_slack_alarm](https://github.com/user-attachments/assets/e0ba79d2-c503-4528-938a-73f665743692)|
 
-# 프로젝트 실행 방법
-## TODO
+# 프로젝트 실행 
+## 요구사항
+이 프로젝트를 실행하려면 다음이 필요합니다:
+- [Rust](https://www.rust-lang.org/tools/install) (build producer)
+- [Python 3.x](https://www.python.org/downloads/) (execute consumer)
+- [Java](https://www.oracle.com/kr/java/technologies/downloads/) (over ver.8), [JDBC connector](https://dev.mysql.com/downloads/connector/j/) (spark-mysql connection)
+- [MySQL](https://dev.mysql.com/downloads/installer/), [Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/installation/) 설치 및 호스팅 환경
+- [Docker Desktop](https://docs.docker.com/desktop/install/mac-install/), [Docker Compose](https://docs.docker.com/compose/install/) 설치 (만약 Docker를 사용하지 않고 이미 구축되어 있는 Kafka와 Spark 실행 환경을 사용할 경우, docker-compose.yml을 참고하여 버젼 관리에 유의하여 진행)
 
+## 프로젝트 세팅
+### 1. 프로젝트 클론 및 종속성 설치
+```bash
+git clone https://github.com/idle-danie/crypto-trading-profit.git
+cd crypto-trading-profit
+```
+### **2. env.sample을 참고하여 환경변수 설정**
+- [producer/.env.sample](https://github.com/idle-danie/crypto-trading-profit/blob/develop/producer/.env.sample)
+- [consumer/.env.sample](https://github.com/idle-danie/crypto-trading-profit/blob/develop/consumer/.env.sample)
+
+### **3. Docker Compose를 사용한 서비스 실행**
+Rust를 설치한 후, producer 애플리케이션을 실행합니다:
+```bash
+docker-compose up -d
+```
+
+### **4. Kafka producer 실행**
+Rust를 설치한 후, producer 애플리케이션을 실행합니다:
+```bash
+cd producer
+cargo run
+```
+
+### **5. (Optional) Python 가상환경 설치 및 실행**
+```bash 
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### **6. Python 실행 환경 세팅**
+```bash
+export PYTHONPATH=$PYTHONPATH:/Users/xxx/crypto-trading-profit/consumer
+cd consumer
+pip install -r requirements.txt
+```
+
+### **7. Spark consumer 실행**
+```bash 
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.2 \
+  --conf spark.driver.bindAddress=127.0.0.1 \
+  --conf spark.driver.host=127.0.0.1 \
+  --jars /path/to/mysql-connector-j-9.0.0.jar \
+  src/main.py
+```
