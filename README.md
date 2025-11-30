@@ -1,4 +1,4 @@
-# [프로젝트 개요](https://narrow-factory-9d4.notion.site/CryptoStreaming-017c6f53e108488f94c2e3962932e104https://narrow-factory-9d4.notion.site/CryptoStreaming-017c6f53e108488f94c2e3962932e104)
+# [프로젝트 개요](https://narrow-factory-9d4.notion.site/CryptoStreaming-017c6f53e108488f94c2e3962932e104)
 
 
 ## 프로젝트 목표
